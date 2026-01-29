@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface GuestbookRepository extends JpaRepository<Guestbook, Long> {
     // 특정 owner의 방명록을 최신순으로 가져오기
-    List<Guestbook> findAllByOwnerOrderByCreatedAtDesc(User owner);
+    List<Guestbook> findAllByOwnerIdOrderByCreatedAtDesc(Long ownerId);
 }
