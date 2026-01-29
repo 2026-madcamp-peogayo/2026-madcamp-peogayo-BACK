@@ -1,4 +1,4 @@
-package com.example.madcamp.peogayo.Back.repositiory;
+package com.example.madcamp.peogayo.Back.repository;
 
 import com.example.madcamp.peogayo.Back.entity.Friend;
 import org.springframework.data.jpa.repository.JpaRepository;
