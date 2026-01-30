@@ -69,16 +69,16 @@ public class PostService {
 
         return posts.stream()
                 .filter(post -> {
-                    // [1] 주인이면 -> 다 보여줌
+                    // 주인이면 -> 다 보여줌
                     if (isOwner) return true;
 
-                    // [2] 전체 공개면 -> 누구나 보여줌
+                    // 전체 공개면 -> 누구나 보여줌
                     if (post.getVisibility() == Post.Visibility.PUBLIC) return true;
 
-                    // [3] 친구 공개면 -> 친구한테만 보여줌
+                    // 친구 공개면 -> 친구한테만 보여줌
                     if (post.getVisibility() == Post.Visibility.FRIENDS && finalIsFriend) return true;
 
-                    // [4] 비공개(PRIVATE)거나 친구 아닌데 친구공개 글인 경우 -> 숨김
+                    // 비공개거나 친구 아닌데 친구공개 글인 경우 -> 숨김
                     return false;
                 })
                 .map(PostResponseDto::from)
