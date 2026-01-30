@@ -23,17 +23,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // (1) CSRF, 로그인 폼, HTTP Basic 인증 모두 끄기
+                // (1) CSRF, 로그인 폼, HTTP Basic 인증 모두 끄기 (로그인 창 안 뜨게)
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 // (2) 요청 주소별 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        // Swagger 관련 주소 허용
+                        // 1. Swagger 관련 주소 허용
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
 
-                        // 나머지 모든 요청도 허용
+                        // 2. 회원가입, 로그인 API 경로는 허용
+                        .requestMatchers("/api/users/**").permitAll()
+
+                        // 3. 이미지 파일 경로 허용
+                        .requestMatchers("/uploads/**").permitAll()
+
+                        // 4. 나머지 모든 요청도 허용
                         .anyRequest().permitAll()
                 );
 
