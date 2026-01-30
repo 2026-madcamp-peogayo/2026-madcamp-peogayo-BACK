@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "0. 회원 (Auth)", description = "회원가입, 로그인, 로그아웃 API")
+@Tag(name = "회원 (Auth)", description = "회원가입, 로그인, 로그아웃 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
