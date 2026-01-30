@@ -10,8 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType; // 추가됨
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile; // 추가됨
+
+import java.io.IOException; // 추가됨
 
 @Tag(name = "마이홈 (Home)", description = "홈피 정보 조회, 프로필 수정 API")
 @RestController
@@ -35,9 +39,15 @@ public class HomeController {
         return ResponseEntity.ok(homeInfo);
     }
 
+    // 프로필 수정
     @Operation(summary = "프로필 수정", description = "내 홈피의 닉네임, 프사, 비공개 설정 등을 수정합니다.")
-    @PutMapping("/profile")
-    public ResponseEntity<String> updateProfile(@RequestBody HomeUpdateRequest request, HttpServletRequest httpRequest) {
+    @PutMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateProfile(
+            @RequestPart(value = "data") HomeUpdateRequest request,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(value = "bgImage", required = false) MultipartFile bgImage,
+            HttpServletRequest httpRequest) {
+
         // 1. 로그인 체크
         HttpSession session = httpRequest.getSession(false);
         if (session == null || session.getAttribute("loginUser") == null) {
@@ -47,13 +57,16 @@ public class HomeController {
         // 2. 세션에서 내 정보 꺼내기
         User loginUser = (User) session.getAttribute("loginUser");
 
-        // 3. 수정 요청
-        User updatedUser = homeService.updateHomeProfile(loginUser, request);
+        try {
+            // 3. 수정 요청 (파일 포함하여 서비스 호출)
+            User updatedUser = homeService.updateHomeProfile(loginUser, request, profileImage, bgImage);
 
-        // 4. 세션 정보 갱신
-        session.setAttribute("loginUser", updatedUser);
+            // 4. 세션 정보 갱신
+            session.setAttribute("loginUser", updatedUser);
 
-        return ResponseEntity.ok("프로필이 수정되었습니다.");
+            return ResponseEntity.ok("프로필이 수정되었습니다.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 저장 중 오류가 발생했습니다.");
+        }
     }
-
 }
