@@ -50,7 +50,6 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 모든 검증 통과 -> DB에 저장
         User user = new User();
         user.setLoginId(request.getLoginId());
 
