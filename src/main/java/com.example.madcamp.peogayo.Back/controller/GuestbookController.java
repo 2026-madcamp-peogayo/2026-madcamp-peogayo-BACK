@@ -4,6 +4,8 @@ import com.example.madcamp.peogayo.Back.dto.GuestbookRequest;
 import com.example.madcamp.peogayo.Back.dto.GuestbookResponseDto;
 import com.example.madcamp.peogayo.Back.entity.User;
 import com.example.madcamp.peogayo.Back.service.GuestbookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "방명록 (Guestbook)", description = "방명록 작성, 조회, 삭제 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/guestbooks")
@@ -21,6 +24,7 @@ public class GuestbookController {
     private final GuestbookService guestbookService;
 
     // 1. 방명록 작성 - ownerId: 방명록 주인
+    @Operation(summary = "방명록 작성", description = "타인의 미니홈피에 방명록을 남깁니다.")
     @PostMapping("/{ownerId}")
     public ResponseEntity<String> writeGuestbook(@PathVariable Long ownerId,
                                                  @RequestBody GuestbookRequest request,
@@ -36,6 +40,7 @@ public class GuestbookController {
     }
 
     // 2. 방명록 목록 조회
+    @Operation(summary = "방명록 목록 조회", description = "특정 미니홈피의 방명록 목록을 불러옵니다.")
     @GetMapping("/{ownerId}")
     public ResponseEntity<List<GuestbookResponseDto>> getGuestbookList(@PathVariable Long ownerId) {
         List<GuestbookResponseDto> list = guestbookService.getGuestbookList(ownerId);
@@ -43,6 +48,7 @@ public class GuestbookController {
     }
 
     // 3. 방명록 삭제
+    @Operation(summary = "방명록 삭제", description = "내가 쓴 방명록이거나, 내 홈피에 달린 방명록을 삭제합니다.")
     @DeleteMapping("/{guestbookId}")
     public ResponseEntity<String> deleteGuestbook(@PathVariable Long guestbookId, HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);
