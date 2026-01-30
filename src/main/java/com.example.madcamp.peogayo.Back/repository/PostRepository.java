@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     // 특정 유저가 쓴 글을 최신순으로 가져오기
-    List<Post> findAllByWriterOrderByCreatedAtDesc(User writer);
+    List<Post> findAllByWriterIdOrderByCreatedAtDesc(Long writerId);
 }

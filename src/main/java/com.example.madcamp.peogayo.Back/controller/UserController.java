@@ -4,6 +4,8 @@ import com.example.madcamp.peogayo.Back.entity.User;
 import com.example.madcamp.peogayo.Back.dto.LoginRequest;
 import com.example.madcamp.peogayo.Back.dto.SignupRequest;
 import com.example.madcamp.peogayo.Back.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "0. 회원 (Auth)", description = "회원가입, 로그인, 로그아웃 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -19,6 +22,7 @@ public class UserController {
     private final UserService userService;
 
     // 1. 아이디 중복 확인 (회원가입 버튼 누르기 전 체크)
+    @Operation(summary = "아이디 중복 확인", description = "회원가입 시 아이디 중복 여부를 체크합니다. (true: 중복/사용불가, false: 사용가능)")
     @GetMapping("/check-loginid")
     public ResponseEntity<Boolean> checkLoginId(@RequestParam String loginId) {
         boolean isDuplicate = userService.checkLoginIdDuplicate(loginId);
@@ -27,6 +31,7 @@ public class UserController {
     }
 
     // 2. 닉네임 중복 확인 (회원가입 버튼 누르기 전 체크)
+    @Operation(summary = "닉네임 중복 확인", description = "회원가입 시 닉네임 중복 여부를 체크합니다. (true: 중복/사용불가, false: 사용가능)")
     @GetMapping("/check-nickname")
     public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
         boolean isDuplicate = userService.checkNicknameDuplicate(nickname);
@@ -35,6 +40,7 @@ public class UserController {
     }
 
     // 3. 회원가입
+    @Operation(summary = "회원가입", description = "신규 회원 정보를 등록합니다.")
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
         try {
@@ -47,6 +53,7 @@ public class UserController {
     }
 
     // 4. 로그인 (세션 생성)
+    @Operation(summary = "로그인", description = "아이디/비번으로 로그인하고 세션을 생성합니다.")
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         User user = userService.login(request.getLoginId(), request.getPassword());
@@ -64,6 +71,7 @@ public class UserController {
     }
 
     // 5. 로그아웃 (세션 삭제)
+    @Operation(summary = "로그아웃", description = "현재 세션을 만료시켜 로그아웃 처리합니다.")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -74,6 +82,7 @@ public class UserController {
     }
 
     // 6. 현재 로그인한 내 정보 확인
+    @Operation(summary = "현재 로그인 정보 확인", description = "세션에 저장된 내 정보를 조회합니다. (새로고침 시 로그인 유지 확인용)")
     @GetMapping("/me")
     public ResponseEntity<?> checkLogin(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
