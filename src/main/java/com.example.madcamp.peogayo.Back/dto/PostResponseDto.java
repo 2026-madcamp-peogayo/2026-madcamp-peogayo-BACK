@@ -1,11 +1,14 @@
 package com.example.madcamp.peogayo.Back.dto;
 
 import com.example.madcamp.peogayo.Back.entity.Post;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Getter @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PostResponseDto {
     private Long id;
     private String contentText;
