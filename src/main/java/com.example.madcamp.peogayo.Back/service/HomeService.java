@@ -41,7 +41,7 @@ public class HomeService {
         User user = userRepository.findById(loginUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("로그인 정보를 찾을 수 없습니다."));
 
-        // 값이 있는 경우에만 변경
+        // 값이 있는 경우에만 변경 (기존 로직 유지)
         if (request.getNickname() != null) user.setNickname(request.getNickname());
         if (request.getGreeting() != null) user.setGreeting(request.getGreeting());
         if (request.getProfileImageUrl() != null) user.setProfileImageUrl(request.getProfileImageUrl());
@@ -51,7 +51,7 @@ public class HomeService {
         if (request.getIsHomePrivate() != null) user.setHomePrivate(request.getIsHomePrivate());
         if (request.getIsFriendListPrivate() != null) user.setFriendListPrivate(request.getIsFriendListPrivate());
 
-        // [추가됨] 이미지 파일이 들어왔을 경우 업로드 후 URL 덮어쓰기
+        // 이미지 파일이 들어왔을 경우 업로드 후 URL 덮어쓰기
         if (profileImage != null && !profileImage.isEmpty()) {
             String profileUrl = fileService.uploadFile(profileImage);
             user.setProfileImageUrl(profileUrl);

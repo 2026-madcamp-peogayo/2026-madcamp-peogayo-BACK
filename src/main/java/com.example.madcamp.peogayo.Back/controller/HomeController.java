@@ -10,12 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType; // 추가됨
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile; // 추가됨
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException; // 추가됨
+import java.io.IOException;
 
 @Tag(name = "마이홈 (Home)", description = "홈피 정보 조회, 프로필 수정 API")
 @RestController
@@ -39,7 +39,7 @@ public class HomeController {
         return ResponseEntity.ok(homeInfo);
     }
 
-    // 프로필 수정
+    // 프로필 수정 (이미지 업로드 추가됨)
     @Operation(summary = "프로필 수정", description = "내 홈피의 닉네임, 프사, 비공개 설정 등을 수정합니다.")
     @PutMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateProfile(

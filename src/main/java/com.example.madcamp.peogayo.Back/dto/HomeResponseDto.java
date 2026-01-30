@@ -21,7 +21,7 @@ public class HomeResponseDto {
         dto.setProfileImageUrl(user.getProfileImageUrl());
         dto.setBgImageUrl(user.getBgImageUrl());
         dto.setGreeting(user.getGreeting());
-        dto.setIsMyHome(isMyHome);
+        dto.setMyHome(isMyHome);
         return dto;
     }
 }
