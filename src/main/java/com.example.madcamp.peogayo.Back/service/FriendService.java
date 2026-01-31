@@ -21,13 +21,13 @@ public class FriendService {
     private final UserRepository userRepository;
 
     // 1. 친구 목록 조회 (공개 범위 확인 포함)
+    // - 내가 추가했거나, 상대가 나를 추가한 모든 관계를 조회 (이미 로직이 양방향 조회로 되어 있음)
     public List<FriendDto> getFriendList(Long targetUserId, User loginUser) {
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
         // [비공개 체크]
-        // 1. 친구 목록이 비공개 설정되어 있고
-        // 2. 조회하는 사람이 주인이 아니라면 -> 빈 리스트 반환
+        // 조회하는 사람이 주인이 아니라면 비공개 시 빈 리스트 반환
         boolean isOwner = (loginUser != null) && loginUser.getId().equals(targetUserId);
 
         if (targetUser.isFriendListPrivate() && !isOwner) {
@@ -41,6 +41,7 @@ public class FriendService {
 
         for (Friend f : friends) {
             User friendUser;
+            // 관계에서 '나'를 제외한 '상대방'을 찾아서 DTO로 변환
             if (f.getRequester().getId().equals(targetUserId)) {
                 friendUser = f.getReceiver();
             } else {
@@ -52,62 +53,36 @@ public class FriendService {
         return result;
     }
 
-    // 2. 일촌 신청 (친구 요청)
+    // 2. 일촌 맺기 / 팔로우 (수락 과정 없음, 즉시 연결)
     @Transactional
-    public void requestFriend(User requester, Long receiverId) {
+    public void addFriend(User requester, Long receiverId) {
         // 나 자신에게 신청 불가
         if (requester.getId().equals(receiverId)) {
-            throw new IllegalArgumentException("자신에게 일촌 신청을 할 수 없습니다.");
+            throw new IllegalArgumentException("자신을 친구로 추가할 수 없습니다.");
         }
 
         User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
-        // 이미 친구이거나, 이미 요청을 보낸 상태인지 확인 (중복 방지)
+        // 이미 친구인지 확인 (중복 방지)
         List<Friend> existing = friendRepository.findFriendship(requester.getId(), receiverId);
         if (!existing.isEmpty()) {
-            throw new IllegalArgumentException("이미 친구이거나 요청 대기 중인 상태입니다.");
+            throw new IllegalArgumentException("이미 친구 관계입니다.");
         }
 
-        // 일촌 신청 생성 (상태: WAITING)
+        // 바로 ACCEPTED(친구) 상태로 생성
         Friend friend = new Friend();
         friend.setRequester(requester);
         friend.setReceiver(receiver);
-        friend.setStatus(Friend.FriendStatus.WAITING);
+        friend.setStatus(Friend.FriendStatus.ACCEPTED);
 
         friendRepository.save(friend);
     }
 
-    // 3. 일촌 수락
-    @Transactional
-    public void acceptFriend(User loginUser, Long requesterId) {
-        // 나와 상대방(requesterId) 사이의 관계를 찾음
-        List<Friend> relationships = friendRepository.findFriendship(loginUser.getId(), requesterId);
-
-        if (relationships.isEmpty()) {
-            throw new IllegalArgumentException("친구 요청이 존재하지 않습니다.");
-        }
-
-        Friend friendRequest = relationships.get(0);
-
-        // 이미 친구인지 확인
-        if (friendRequest.getStatus() == Friend.FriendStatus.ACCEPTED) {
-            throw new IllegalArgumentException("이미 일촌 관계입니다.");
-        }
-
-        // 권한 확인: 요청을 받은 사람만 수락 가능
-        if (!friendRequest.getReceiver().getId().equals(loginUser.getId())) {
-            throw new IllegalArgumentException("수락 권한이 없습니다. (요청을 보낸 사람은 수락할 수 없음)");
-        }
-
-        // 상태 변경 WAITING -> ACCEPTED
-        friendRequest.setStatus(Friend.FriendStatus.ACCEPTED);
-
-    }
-
-    // 4. 일촌 끊기 / 거절
+    // 3. 일촌 끊기 / 언팔로우
     @Transactional
     public void deleteFriend(User loginUser, Long friendId) {
+        // 나와 상대방 사이의 관계를 찾음
         List<Friend> relationships = friendRepository.findFriendship(loginUser.getId(), friendId);
 
         if (relationships.isEmpty()) {

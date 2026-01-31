@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "친구 (Friend)", description = "일촌 목록 조회, 신청, 수락 API")
+@Tag(name = "친구 (Friend)", description = "일촌 목록 조회, 신청 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/friends")
@@ -46,28 +46,11 @@ public class FriendController {
         User loginUser = (User) session.getAttribute("loginUser");
 
         try {
-            friendService.requestFriend(loginUser, receiverId);
-            return ResponseEntity.ok("일촌 신청을 보냈습니다.");
+            friendService.addFriend(loginUser, receiverId);
+            return ResponseEntity.ok("일촌 맺기가 완료되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // 3. 친구 신청 수락하기
-    @Operation(summary = "일촌 신청 수락하기", description = "나에게 온 일촌 신청을 수락하여 친구 관계를 맺습니다.")
-    @PostMapping("/accept/{requesterId}")
-    public ResponseEntity<String> acceptFriend(@PathVariable Long requesterId, HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        if (session == null || session.getAttribute("loginUser") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-        }
-        User loginUser = (User) session.getAttribute("loginUser");
-
-        try {
-            friendService.acceptFriend(loginUser, requesterId);
-            return ResponseEntity.ok("일촌 신청을 수락했습니다!");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 }

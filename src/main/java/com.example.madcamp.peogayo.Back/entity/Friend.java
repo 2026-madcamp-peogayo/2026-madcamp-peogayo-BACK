@@ -30,11 +30,10 @@ public class Friend {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        if (this.status == null) this.status = FriendStatus.WAITING;
+        if (this.status == null) this.status = FriendStatus.ACCEPTED;
     }
 
     public enum FriendStatus {
-        WAITING, // 대기 중
-        ACCEPTED // 수락됨
+        ACCEPTED
     }
 }
