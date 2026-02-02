@@ -8,6 +8,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,8 +28,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // (1) CSRF, 로그인 폼, HTTP Basic 인증 모두 끄기 (로그인 창 안 뜨게)
+                // (1) CSRF, 로그인 폼, HTTP Basic 인증 모두 끄기
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
@@ -39,10 +45,28 @@ public class SecurityConfig {
                         // 3. 이미지 파일 경로 허용
                         .requestMatchers("/uploads/**").permitAll()
 
-                        // 4. 나머지 모든 요청도 허용
+                        // 4. 광장(WebSocket) 관련 주소 허용
+                        .requestMatchers("/ws-stomp/**", "/api/plaza/**").permitAll()
+
+                        // 5. 나머지 모든 요청도 허용
                         .anyRequest().permitAll()
                 );
 
         return http.build();
+    }
+
+    // 3. CORS 설정
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
