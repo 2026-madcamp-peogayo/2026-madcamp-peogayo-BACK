@@ -53,4 +53,25 @@ public class FriendController {
         }
     }
 
+    // 3. 일촌 끊기 (삭제)
+    @Operation(summary = "일촌 끊기", description = "기존 일촌 관계를 삭제합니다.")
+    @DeleteMapping("/{friendId}")
+    public ResponseEntity<String> deleteFriend(@PathVariable Long friendId, HttpServletRequest httpRequest) {
+        // 1. 세션에서 로그인 유저 가져오기
+        HttpSession session = httpRequest.getSession(false);
+        if (session == null || session.getAttribute("loginUser") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        User loginUser = (User) session.getAttribute("loginUser");
+
+        try {
+            // 2. 서비스 레이어의 삭제 로직 호출
+            friendService.deleteFriend(loginUser, friendId);
+            return ResponseEntity.ok("일촌 끊기가 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 3. 관계가 없거나 에러 발생 시 처리
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
