@@ -36,7 +36,7 @@ public class FriendController {
     }
 
     // 2. 친구 신청 보내기
-    @Operation(summary = "일촌 신청 보내기", description = "다른 유저에게 일촌 신청을 보냅니다. (이미 친구거나 신청 중이면 실패)")
+    @Operation(summary = "일촌 신청 보내기", description = "다른 유저에게 일촌 신청을 보냅니다.")
     @PostMapping("/request/{receiverId}")
     public ResponseEntity<String> requestFriend(@PathVariable Long receiverId, HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);

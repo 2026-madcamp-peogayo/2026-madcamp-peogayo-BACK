@@ -70,10 +70,10 @@ public class MainService {
         return randomUsers.get(0).getId();
     }
 
-    // MAIN-05: 오늘의 추천 (랜덤 유저 5명 리스트 반환)
+    // MAIN-05: 오늘의 추천 (랜덤 유저 3명 리스트 반환)
     public List<RecommendUserDto> getTodayRecommendations(Long myId) {
-        // 나를 제외한 공개 유저 5명 랜덤 조회
-        List<User> users = userRepository.findRandomPublicUsers(myId, 5);
+        // 나를 제외한 공개 유저 3명 랜덤 조회
+        List<User> users = userRepository.findRandomPublicUsers(myId, 3);
 
         return users.stream()
                 .map(RecommendUserDto::from)
