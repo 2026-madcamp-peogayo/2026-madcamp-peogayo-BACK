@@ -4,24 +4,34 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import java.io.File;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    // 1. 이미지 파일 접근 경로 설정
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String rootPath = System.getProperty("user.dir");
 
-        // 내 프로젝트 폴더 안의 /uploads/ 폴더에 있는 파일을 보여줌
+        // 경로 구분자 문제 해결을 위한 File 객체 활용
+        File uploadDir = new File(rootPath, "uploads");
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        // 'file:' 접두사 뒤에 절대경로를 붙임
+        String uploadPath = "file:" + uploadDir.getAbsolutePath() + "/";
+
+        System.out.println("이미지 서빙 경로: " + uploadPath);
+
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/");
+                .addResourceLocations(uploadPath);
     }
 
-    // 2. 외부 접속 허용 설정 (CORS 추가됨)
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")      // 모든 API 경로에 대해
-                .allowedOrigins("*")    // 모든 IP 주소에서의 접속을 허용
+        registry.addMapping("/**")
+                .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*");
     }
