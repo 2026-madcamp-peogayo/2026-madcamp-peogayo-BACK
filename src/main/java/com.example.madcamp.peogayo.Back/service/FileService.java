@@ -10,29 +10,38 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    // 프로젝트 루트 경로 밑에 uploads 폴더 생성
-    private final String uploadDir = System.getProperty("user.dir") + "/uploads/";
+    // 1. 업로드 디렉토리 설정 (프로젝트 폴더 내 uploads 폴더)
+    private final String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator;
 
     public String uploadFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             return null;
         }
 
-        // 폴더가 없으면 생성
+        // 2. 폴더가 없으면 생성
         File dir = new File(uploadDir);
         if (!dir.exists()) {
-            dir.mkdirs();
+            if (dir.mkdirs()) {
+                System.out.println("Upload directory created: " + uploadDir);
+            }
         }
 
-        // 파일명 중복 방지
+        // 3. 파일명 중복 방지
         String originalFilename = file.getOriginalFilename();
-        String savedFilename = UUID.randomUUID() + "_" + originalFilename;
+        // 확장자 추출
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
 
-        // 파일 저장
+        String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
+
+        // 4. 파일 저장
         File dest = new File(uploadDir + savedFilename);
+
         file.transferTo(dest);
 
-        // DB에 저장할 접근 URL 반환
+        // 5. DB에 저장할 접근용 URL 반환
         return "/uploads/" + savedFilename;
     }
 }
