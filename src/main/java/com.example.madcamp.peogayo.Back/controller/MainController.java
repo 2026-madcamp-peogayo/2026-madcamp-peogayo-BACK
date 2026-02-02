@@ -69,7 +69,7 @@ public class MainController {
     }
 
     // MAIN-05: 오늘의 추천 (랜덤 5명)
-    @Operation(summary = "오늘의 추천 친구", description = "공개 유저 5명을 랜덤으로 추천해줍니다.")
+    @Operation(summary = "오늘의 추천 친구", description = "공개 유저 3명을 랜덤으로 추천해줍니다.")
     @GetMapping("/recommend")
     public ResponseEntity<List<RecommendUserDto>> getTodayRecommendations(HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);

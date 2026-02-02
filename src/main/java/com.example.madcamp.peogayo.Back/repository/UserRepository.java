@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByLoginId(String loginId); // 로그인용
-    boolean existsByLoginId(String loginId); // 아이디 중복용
-    boolean existsByNickname(String nickname);// 닉네임 중복 체크
+    Optional<User> findByLoginId(String loginId);
+    boolean existsByLoginId(String loginId);
+    boolean existsByNickname(String nickname);
 
-    // 랜덤 공용 유저 조회 (본인 제외)
-    @Query(value = "SELECT * FROM user WHERE is_home_private = false AND id <> :myId ORDER BY RAND() LIMIT :limitCnt", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE is_home_private = 0 AND id <> :myId ORDER BY RAND() LIMIT :limitCnt", nativeQuery = true)
     List<User> findRandomPublicUsers(@Param("myId") Long myId, @Param("limitCnt") int limitCnt);
 }
