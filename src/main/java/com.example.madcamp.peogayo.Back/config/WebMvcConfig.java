@@ -11,21 +11,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String rootPath = System.getProperty("user.dir");
+        String os = System.getProperty("os.name").toLowerCase();
+        String uploadPath = os.contains("win") ? "C:/peogayo_uploads/" : "/home/ec2-user/peogayo_uploads/";
 
-        // 경로 구분자 문제 해결을 위한 File 객체 활용
-        File uploadDir = new File(rootPath, "uploads");
+        File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
 
-        // 'file:' 접두사 뒤에 절대경로를 붙임
-        String uploadPath = "file:" + uploadDir.getAbsolutePath() + "/";
-
-        System.out.println("이미지 서빙 경로: " + uploadPath);
+        String resourceLocation = "file:" + uploadDir.getAbsolutePath() + "/";
+        System.out.println("이미지 서빙 경로: " + resourceLocation);
 
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(uploadPath);
+                .addResourceLocations(resourceLocation);
     }
 
     @Override

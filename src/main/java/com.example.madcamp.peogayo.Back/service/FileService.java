@@ -10,38 +10,39 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    // 1. 업로드 디렉토리 설정 (프로젝트 폴더 내 uploads 폴더)
-    private final String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator;
+    // 서버와 로컬 환경에 따른 절대 경로 설정
+    private final String getUploadPath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            return "C:/peogayo_uploads/";
+        } else {
+            // ec2-user 계정 폴더 내부에 저장
+            return "/home/ec2-user/peogayo_uploads/";
+        }
+    }
 
     public String uploadFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             return null;
         }
 
-        // 2. 폴더가 없으면 생성
+        String uploadDir = getUploadPath();
+
+        // 1. 폴더가 없으면 생성
         File dir = new File(uploadDir);
         if (!dir.exists()) {
-            if (dir.mkdirs()) {
-                System.out.println("Upload directory created: " + uploadDir);
-            }
+            dir.mkdirs();
         }
 
-        // 3. 파일명 중복 방지
+        // 2. 파일명 중복 방지 (UUID 사용)
         String originalFilename = file.getOriginalFilename();
-        // 확장자 추출
-        String extension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-
         String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
 
-        // 4. 파일 저장
+        // 3. 파일 물리적 저장
         File dest = new File(uploadDir + savedFilename);
-
         file.transferTo(dest);
 
-        // 5. DB에 저장할 접근용 URL 반환
+        // 4. DB에 저장할 URL 반환 (WebMvcConfig의 핸들러와 매핑됨)
         return "/uploads/" + savedFilename;
     }
 }
