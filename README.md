@@ -29,15 +29,21 @@
 
 ## Key Features
 
-### 1. 🖌️ Canvas Drawing Editor
+### 1. 🖌️ Plaza
 
 * 마우스/터치를 이용한 실시간 드로잉 기능.
-* 생성된 그림을 `Blob` 데이터로 변환하여 서버에 전송 및 게시글로 등록.
+* 생성된 그림을 `Blob` 데이터로 변환하여 서버에 전송.
 
-### 2. 🏠 My Home & Timeline
+<img width="1192" height="867" alt="image (3)" src="https://github.com/user-attachments/assets/86722da8-450d-4d33-a851-6ea293b2cd8b" />
+
+### 2. 🏠 My Home 
 
 * 유저별 개인 페이지 제공 (프로필, 배경화면, 인사말 설정).
 * **공개/비공개 설정:** 마이홈 및 친구 목록의 노출 여부를 선택하여 프라이버시 보호.
+* 게시글에는 그림만 등록 가능 (+ 바로 촬영을 하여 꾸며서 올릴수있음)
+<img width="1195" height="865" alt="image (1)" src="https://github.com/user-attachments/assets/00499c4e-c752-41ae-85a6-a93bef21a25e" />
+
+<img width="1195" height="868" alt="image" src="https://github.com/user-attachments/assets/89765999-183d-4a5e-ad87-1a6144cd89c9" />
 
 ### 3. 🌊 Random Wave (파도타기)
 
@@ -46,12 +52,13 @@
 
 ### 4. 🤝 Friend System (일촌)
 
-* 일촌 신청, 수락, 해제 기능.
+* 일촌 신청,해제 기능.
 * 친구 관계에 따른 게시글 열람 권한 차등 부여.
 
 ### 5. 📖 Guestbook
 
-* 타인의 홈에 방문하여 그림이나 메시지를 남길 수 있는 소통 창구.
+* 타인의 홈에 방문하여 메시지를 남길 수 있는 소통 창구 방명록.
+<img width="1185" height="868" alt="image (2)" src="https://github.com/user-attachments/assets/179857a1-0ccb-468a-a825-7f4e65fbf334" />
 
 ---
 
